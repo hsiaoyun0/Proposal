@@ -1,25 +1,30 @@
 import os
 import argparse
+import re
 
 # initial
 parser = argparse.ArgumentParser()
 parser.add_argument('--numberoffile', type=int, default=100)
 
-def ReadFile():
+def ReadFile(numberoffile):
+    
+    getnum = numberoffile
     #Read File Name
     CNNFileName = os.listdir("/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/cnn/stories")
 
     # Read File
-    for filename in CNNFileName :
+    NeedFile=[]
+    for filename in CNNFileName[:getnum] :
+        content= ""
         filename = '/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/cnn/stories/'+ filename
-        f = open(filename, "r")
-        print(f.read())
+        content = list(filter(None, re.split('[.?\n]',open(filename, "r").read())))
 
+        NeedFile.append(content)
 
-def __init__(self, needamount):
-    self.needamount = needamount
+    return NeedFile
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    print(args.numberoffile)
+    FileContent = ReadFile(args.numberoffile)
+    print(FileContent)
