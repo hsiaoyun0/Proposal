@@ -9,7 +9,6 @@ parser.add_argument('--numberofans', type=int, default=3)
 parser.add_argument('--source', type=str, default='cnn', help='cnn | dailymail')
 
 def ReadFile(source, numberoffile):
-    
     getnum = numberoffile
     source = "/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/"+source+"/stories"
     #Read File Name
@@ -28,7 +27,6 @@ def ReadFile(source, numberoffile):
     return NeedFile
 
 def StartEndPoints(Content, numberofans):
-    
     flag = Content.count("@highlight")
     if flag < numberofans :
         numberofans = flag
@@ -49,10 +47,8 @@ def StartEndPoints(Content, numberofans):
     return start, end
      
 
-def ProduceAnswer(FileContent, numberofans):
-    
+def ProduceAnswer(FileContent, numberofans):    
     DocumentPair=[]
-    
     for Content in FileContent:
         ans=[]
         context=[]
