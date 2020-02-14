@@ -6,12 +6,14 @@ import re
 parser = argparse.ArgumentParser()
 parser.add_argument('--numberoffile', type=int, default=100)
 parser.add_argument('--numberofans', type=int, default=3)
+parser.add_argument('--source', type=str, default='cnn', help='cnn | dailymail')
 
-def ReadFile(numberoffile):
+def ReadFile(source, numberoffile):
     
     getnum = numberoffile
+    source = "/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/"+source+"/stories"
     #Read File Name
-    CNNFileName = os.listdir("/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/cnn/stories")
+    CNNFileName = os.listdir(source)
     if len(CNNFileName)<getnum:
         getnum = len(CNNFileName)
 
@@ -19,28 +21,46 @@ def ReadFile(numberoffile):
     NeedFile=[]
     for filename in CNNFileName[:getnum] :
         content= ""
-        filename = '/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/cnn/stories/'+ filename
+        filename = source+"/"+ filename
         content = list(filter(None, re.split('[.?\n]',open(filename, "r").read())))
-
         NeedFile.append(content)
 
     return NeedFile
 
+def StartEndPoints(Content, numberofans):
+    
+    flag = Content.count("@highlight")
+    if flag < numberofans :
+        numberofans = flag
+    start = Content.index("@highlight")
+    end=0
+    if flag == numberofans:
+        end = len(Content)-1
+    else:
+        allindex=[]
+        i=0
+        for Sen in Content[start:]:
+            #print(Sen)
+            if Sen == "@highlight":
+                allindex.append(i+start)
+            i+=1
+        end=int(allindex[numberofans])
+        
+    return start, end
+     
+
 def ProduceAnswer(FileContent, numberofans):
     
     DocumentPair=[]
-    flag = FileContent[0].count("@highlight")
-    
-    if flag < numberofans:
-        numberofans = flag
     
     for Content in FileContent:
         ans=[]
         context=[]
-        for Sen in Content[-(flag*2):-(flag-numberofans)]:
+        start, end = StartEndPoints(Content, numberofans)
+
+        for Sen in Content[start:end]:
             if Sen != "@highlight":
                 ans.append(Sen)
-        
         for Sen in Content:
              if Sen == "@highlight": break
              context.append(Sen)
@@ -50,7 +70,7 @@ def ProduceAnswer(FileContent, numberofans):
     return DocumentPair
 
 def MakeFile(args, DocumentPair):
-    FileName = "CNN_"+str(args.numberofans)+"ans_"+str(args.numberoffile)+"files.txt"
+    FileName = str(args.source)+"_"+str(args.numberofans)+"ans_"+str(args.numberoffile)+"files.txt"
     with open(FileName,"w") as Writein :
         for Pair in DocumentPair:
             Writein.write("Story\n")
@@ -64,6 +84,6 @@ def MakeFile(args, DocumentPair):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    FileContent = ReadFile(args.numberoffile)
+    FileContent = ReadFile(args.source, args.numberoffile)
     DocumentPair = ProduceAnswer(FileContent, args.numberofans)
     MakeFile(args, DocumentPair)    
