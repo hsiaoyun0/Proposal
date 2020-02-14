@@ -12,6 +12,8 @@ def ReadFile(numberoffile):
     getnum = numberoffile
     #Read File Name
     CNNFileName = os.listdir("/share/corpus/CNN_DailyMail/CNN_DailyMail/origin(DMQA)/cnn/stories")
+    if len(CNNFileName)<getnum:
+        getnum = len(CNNFileName)
 
     # Read File
     NeedFile=[]
@@ -31,7 +33,7 @@ def ProduceAnswer(FileContent, numberofans):
     
     if flag < numberofans:
         numberofans = flag
-    print(flag)
+    
     for Content in FileContent:
         ans=[]
         context=[]
