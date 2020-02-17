@@ -21,7 +21,7 @@ def ReadFile(source, numberoffile):
     for filename in CNNFileName[:getnum] :
         content= ""
         filename = source+"/"+ filename
-        content = list(filter(None, re.split('[.?\n]',open(filename, "r").read())))
+        content = list(filter(None, re.split('[\n]',open(filename, "r").read())))
         NeedFile.append(content)
 
     return NeedFile
